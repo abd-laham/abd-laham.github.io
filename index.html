@@ -31,7 +31,7 @@ function myFunction() {
         // Copy floats
         for (var i = 0; i < mFloatArray.length; i++) 
         {
-            mFloatArray[i] = dataview.getFloat32(i * 4); // At every 4th byte
+            mFloatArray[i] = dataview.getFloat32(i * 4,true); // At every 4th byte
             window.alert(mFloatArray[i]);
         }
 
