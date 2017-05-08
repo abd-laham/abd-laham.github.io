@@ -21,6 +21,7 @@
 <script>
     
 function myMul(W,x) {
+    alert("BEGIN!");
     var my_arr = new Float32Array(W.length / x.length);
     for (var i = 0; i < W.length/x.length; i++){
         my_arr[i] = 0.0
@@ -28,7 +29,7 @@ function myMul(W,x) {
             my_arr[i] += W[i*x.length + j];
         }
     }
-    
+    alert("END!");
     return my_arr;
 }
 function myFunction() {
