@@ -2,11 +2,24 @@
 <html>
 <body>
 
-<h2>What Can JavaScript Do?</h2>
+<h3>A demonstration of how to access a Slider Control</h3>
 
-<p id="demo">JavaScript can change HTML content.</p>
+<input type="range" id="myRange" value="90">
 
-<button type="button" onclick='document.getElementById("demo").innerHTML = "Hello JavaScript!"'>Click Me!</button>
+<p>Click the button to get the value of the slider control.</p>
+
+<button onclick="myFunction()">Try it</button>
+
+<p><strong>Note:</strong> input elements with type="range" are not supported in IE 9 and earlier versions.</p>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    var x = document.getElementById("myRange").value;
+    document.getElementById("demo").innerHTML = x;
+}
+</script>
 
 </body>
 </html>
