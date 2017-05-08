@@ -19,6 +19,18 @@
 <p id="demo"></p>
 
 <script>
+    
+function myMul(W,x) {
+    var my_arr = new Float32Array(W.length / x.length);
+    for (var i = 0; i < W.length/x.length; i++){
+        my_arr[i] = 0.0
+        for (var j = 0; j < x.length; j++){
+            my_arr[i] += W[i*x.length + j];
+        }
+    }
+    
+    return my_arr;
+}
 function myFunction() {
     var oReq = new XMLHttpRequest();
     oReq.open("GET", "/file3.bin", true);
@@ -41,7 +53,7 @@ function myFunction() {
         }
           window.alert(mFloatArray[0]);
          
-          window.alert(tmp/mFloatArray.length);
+          document.write(myMul(mFloatArray,Array([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0)));
       }
     };
 
