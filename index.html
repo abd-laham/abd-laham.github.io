@@ -17,18 +17,25 @@
 <script>
 function myFunction() {
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", "/index.html", true);
+    oReq.open("GET", "/file.bin", true);
     oReq.responseType = "arraybuffer";
 
     oReq.onload = function (oEvent) {
       var arrayBuffer = oReq.response; // Note: not oReq.responseText
       if (arrayBuffer) {
-        var byteArray = new Uint8Array(arrayBuffer);
-        for (var i = 0; i < byteArray.byteLength; i++) {
-          // do something with each byte in the array
+        var dataview = new DataView(arrayBuffer);
+
+        // Create buffer (4 bytes / float)
+        var mFloatArray = new Float32Array(arrayBuffer.byteLength / 4);
+
+        // Copy floats
+        for (var i = 0; i < mFloatArray.length; i++) 
+        {
+            mFloatArray[i] = dataview.getFloat32(i * 4); // At every 4th byte
+            window.alert(mFloatArray[i]);
         }
+
       }
-      window.alert(arrayBuffer);
     };
 
     oReq.send(null);
