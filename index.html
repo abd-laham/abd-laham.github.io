@@ -56,7 +56,12 @@ function myFunction() {
         }
           window.alert(mFloatArray[0]);
          
-          document.write(myMul(mFloatArray,Array([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0])));
+          res = myMul(mFloatArray,Array([1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0]));
+          alert("RETURNED!");
+          tmp = 0.0;
+          for (var i =0; i < res.length; i++){
+            tmp += res[i];
+          }
       }
     };
 
