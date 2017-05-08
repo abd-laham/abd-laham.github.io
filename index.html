@@ -38,7 +38,9 @@ function myFunction() {
             mFloatArray[i] = dataview.getFloat32(i * 4,true); // At every 4th byte
             window.alert(mFloatArray[i]);
         }
+          window.alert("done!");
         mtx = math.matrix(mFloatArray);
+        
         window.alert(mtx);
       }
     };
