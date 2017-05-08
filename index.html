@@ -39,9 +39,9 @@ function myFunction() {
             window.alert(mFloatArray[i]);
         }
           window.alert("done!");
-        mtx = math.matrix(mFloatArray);
+        mtx = math.matrix(Array.prototype.slice.call(mFloatArray));
         
-        window.alert(mtx);
+       document.write(mtx);
       }
     };
 
