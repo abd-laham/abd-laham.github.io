@@ -21,7 +21,7 @@
 <script>
 function myFunction() {
     var oReq = new XMLHttpRequest();
-    oReq.open("GET", "/file2.bin", true);
+    oReq.open("GET", "/file3.bin", true);
     oReq.responseType = "arraybuffer";
 
     oReq.onload = function (oEvent) {
@@ -36,12 +36,11 @@ function myFunction() {
         for (var i = 0; i < mFloatArray.length; i++) 
         {
             mFloatArray[i] = dataview.getFloat32(i * 4,true); // At every 4th byte
-            window.alert(mFloatArray[i]);
         }
           window.alert("done!");
-        mtx = math.matrix(math.reshape(Array.prototype.slice.call(mFloatArray),[2,2]));
+        mtx = math.matrix(math.reshape(Array.prototype.slice.call(mFloatArray),[20,192*128*3]));
         
-       document.write(mtx);
+       document.write(math.size(mtx));
       }
     };
 
