@@ -40,6 +40,10 @@ function myFunction() {
             tmp += mFloatArray[i];
         }
           window.alert(mFloatArray[0]);
+         mtx = math.matrix(math.reshape(Array.prototype.slice.call(mFloatArray),[20,192*128*3]));
+         window.alert("matrix created!");
+        document.write(math.size(mtx));
+          window.alert("printed!");
       }
     };
 
