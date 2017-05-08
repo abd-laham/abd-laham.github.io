@@ -39,7 +39,7 @@ function myFunction() {
             window.alert(mFloatArray[i]);
         }
           window.alert("done!");
-        mtx = math.matrix(Array.prototype.slice.call(mFloatArray));
+        mtx = math.matrix(math.reshape(Array.prototype.slice.call(mFloatArray),[2,2]));
         
        document.write(mtx);
       }
