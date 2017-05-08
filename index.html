@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+    <head> 
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/mathjs/3.12.3/math.min.js"></script>
+    </head>
+    
 <body>
 
 <h3>A demonstration of how to access a Slider Control</h3>
@@ -34,7 +38,8 @@ function myFunction() {
             mFloatArray[i] = dataview.getFloat32(i * 4,true); // At every 4th byte
             window.alert(mFloatArray[i]);
         }
-
+        mtx = math.matrix(mFloatArray);
+        window.alert(mtx);
       }
     };
 
