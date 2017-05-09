@@ -194,39 +194,14 @@ function myFunction() {
 }
 var rgb_img = new Uint8Array(192*128*3);
 
-function hsv_to_rgb(hsv_image){
-        
-    for (var kk = 0; kk < hsv_image.length/3; kk++){
-        var h = hsv_image[kk*3];
-        var s = hsv_image[kk*3 + 1];
-        var v = hsv_image[kk*3 + 2];
-        
-        var r, g, b;
 
-        var i = Math.floor(h * 6);
-        var f = h * 6 - i;
-        var p = v * (1 - s);
-        var q = v * (1 - f * s);
-        var t = v * (1 - (1 - f) * s);
-
-        switch(i % 6){
-            case 0: r = v, g = t, b = p; break;
-            case 1: r = q, g = v, b = p; break;
-            case 2: r = p, g = v, b = t; break;
-            case 3: r = p, g = q, b = v; break;
-            case 4: r = t, g = p, b = v; break;
-            case 5: r = v, g = p, b = q; break;
-        }
-        rgb_img[kk*3] = r * 255;
-        rgb_img[kk*3 + 1] = g * 255;
-        rgb_img[kk*3 + 2] = b*255;
-    }
-    return rgb_img;
-}
 var latent = new Float32Array(20);
 var v300 = new Float32Array(300);
 var hsv_img_gen = new Float32Array(192*128*3);
 var firstClick = true;
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var imgData = ctx.createImageData(128, 192);
 function generateImage() {
 
     if (firstClick) {
@@ -261,21 +236,54 @@ function generateImage() {
     elemwise_add(hsv_img_gen,hsv_img_gen,+1,bmu_output);
     
 }
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
-var imgData = ctx.createImageData(128, 192);
+
+function hsv_to_rgb(hsv_image){
+        
+    for (var kk = 0; kk < hsv_image.length/3; kk++){
+        var h = hsv_image[kk*3];
+        var s = hsv_image[kk*3 + 1];
+        var v = hsv_image[kk*3 + 2];
+        
+        var r, g, b;
+
+        var i = Math.floor(h * 6);
+        var f = h * 6 - i;
+        var p = v * (1 - s);
+        var q = v * (1 - f * s);
+        var t = v * (1 - (1 - f) * s);
+
+        switch(i % 6){
+            case 0: r = v, g = t, b = p; break;
+            case 1: r = q, g = v, b = p; break;
+            case 2: r = p, g = v, b = t; break;
+            case 3: r = p, g = q, b = v; break;
+            case 4: r = t, g = p, b = v; break;
+            case 5: r = v, g = p, b = q; break;
+        }
+        //rgb_img[kk*3] = r * 255;
+        //rgb_img[kk*3 + 1] = g * 255;
+        //rgb_img[kk*3 + 2] = b*255;
+        
+        imgData.data[kk*4+0] = r * 255;
+        imgData.data[kk*4+1] = g * 255;
+        imgData.data[kk*4+2] = b * 255;
+        imgData.data[kk*4+3] = 255;
+    }
+}
+    
 function drawImage() {
     generateImage();
-    var rgb_img = hsv_to_rgb(hsv_img_gen);
+    hsv_to_rgb(hsv_img_gen);
+//    var rgb_img = hsv_to_rgb(hsv_img_gen);
     
 
-    var i;
-    for (i = 0; i < rgb_img.length/3; i++) {
-        imgData.data[i*4+0] = rgb_img[i*3];
-        imgData.data[i*4+1] = rgb_img[i*3+1];
-        imgData.data[i*4+2] = rgb_img[i*3+2];
-        imgData.data[i*4+3] = 255;
-    }
+//    var i;
+//    for (i = 0; i < rgb_img.length/3; i++) {
+//        imgData.data[i*4+0] = rgb_img[i*3];
+//        imgData.data[i*4+1] = rgb_img[i*3+1];
+//        imgData.data[i*4+2] = rgb_img[i*3+2];
+//        imgData.data[i*4+3] = 255;
+//    }
 
     ctx.putImageData(imgData, 10, 10);
 
