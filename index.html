@@ -116,32 +116,8 @@ function read_array_32(filename,varname) {
 
 
 function myFunction() {
-    var oReq = new XMLHttpRequest();
-    oReq.open("GET", "/W_decoder0.bin", true);
-    oReq.responseType = "arraybuffer";
-
-    oReq.onload = function (oEvent) {
-      var arrayBuffer = oReq.response; // Note: not oReq.responseText
-      if (arrayBuffer) {
-        var dataview = new DataView(arrayBuffer);
-
-        // Create buffer (4 bytes / float)
-        var mFloatArray = new Float32Array(arrayBuffer.byteLength / 2);
-
-        // Copy floats
-         tmp = 0.0;
-        for (var i = 0; i < mFloatArray.length; i++) 
-        {
-            mFloatArray[i] = decodeFloat16(dataview.getUint16(i * 2,true)); // At every 4th byte
-            tmp += mFloatArray[i];
-        }
-          window.alert(mFloatArray[0]);
-         
-      }
-    };
-
-    oReq.send(null);
-    
+    read_array_16("/W_decoder0.bin","W_decoder0");
+    read_array_32("/rmean_decoder0_32.bin","rmean_decoder0");
 }
 </script>
 
