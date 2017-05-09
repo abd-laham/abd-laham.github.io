@@ -222,7 +222,7 @@ function hsv_to_rgb(hsv_image){
 }
 var latent = new Float32Array(20);
 var v300 = new Float32Array(300);
-var hsv_img_gen = new Float32Array(192*168*3);
+var hsv_img_gen = new Float32Array(192*128*3);
     
 function generateImage() {
     if (Wmu_output == 0) {
@@ -252,7 +252,7 @@ function generateImage() {
     
     // img = np.dot(hidden_out,Wmu_output) + bmu_output
     myMul(hsv_img_gen,v300,Wmu_output)
-    elemwise_add(hsv_img_gen,hsv_img_gen,bmu_output);
+    elemwise_add(hsv_img_gen,hsv_img_gen,+1,bmu_output);
     
 }
 function drawImage() {
