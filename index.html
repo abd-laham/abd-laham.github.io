@@ -218,6 +218,10 @@ function generateImage() {
         for (var i = 0; i < Wmu_output2.length; i++) {
             Wmu_output[Wmu_output1.length + i] = Wmu_output2[i];
         }
+        
+        for (var i = 0; i < rvar_decoder0.length; i++) {
+            rvar_decoder0[i] = Math.sqrt(rvar_decoder0[i] + 0.0001);
+        }
     }
 
     for (var i = 0; i < 20; i++){
@@ -229,7 +233,7 @@ function generateImage() {
     
     //out_norm = (out - rmean_decoder0)/rvar_decoder0
     elemwise_add(v300,v300,-1,rmean_decoder0);
-    elemwise_div(v300,v300,Math.sqrt(rvar_decoder0 + 0.0001));
+    elemwise_div(v300,v300,rvar_decoder0);
     
     // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
     elemwise_mul(v300,v300,gamma_decoder0);
