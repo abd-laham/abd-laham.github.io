@@ -15,7 +15,7 @@
 <button onclick="myFunction()">Try it</button>
 
 <p><strong>Note:</strong> input elements with type="range" are not supported in IE 9 and earlier versions.</p>
-
+    <img id="photo">
 <p id="demo"></p>
 
 <script>
@@ -122,8 +122,58 @@ function read_array_32(filename,varname) {
 
 
 function myFunction() {
+   
     read_array_16("/W_decoder0.bin","W_decoder0");
+    read_array_16("/Wmu_output1.bin","Wmu_output1");
+    read_array_16("/Wmu_output2.bin","Wmu_output2");
+    read_array_16("/bmu_output.bin","bmu_output");
+    
+    read_array_16("/beta_decoder0.bin","beta_decoder0");
+    read_array_16("/gamma_decoder0.bin","gamma_decoder0");
+
     read_array_32("/rmean_decoder0_32.bin","rmean_decoder0");
+    read_array_32("/rvar_decoder0_32.bin","rvar_decoder0");
+    
+}
+function hsv_to_rgb(hsv_image){
+    rgb_img = new Uint8Array(hsv_image.length);
+        
+    for (var kk = 0; kk < hsv_image.length/3; kk++){
+        var h = hsv_image[kk*3];
+        var s = hsv_image[kk*3 + 1];
+        var l = hsv_image[kk*3 + 2];
+        
+        var r, g, b;
+
+        var i = Math.floor(h * 6);
+        var f = h * 6 - i;
+        var p = v * (1 - s);
+        var q = v * (1 - f * s);
+        var t = v * (1 - (1 - f) * s);
+
+        switch(i % 6){
+            case 0: r = v, g = t, b = p; break;
+            case 1: r = q, g = v, b = p; break;
+            case 2: r = p, g = v, b = t; break;
+            case 3: r = p, g = q, b = v; break;
+            case 4: r = t, g = p, b = v; break;
+            case 5: r = v, g = p, b = q; break;
+        }
+        rgb_img[kk*3] = r * 255;
+        rgb_img[kk*3 + 1] = g * 255;
+        rgb_img[kk*3 + 2] = b*255;
+    }
+    return rgb_img;
+}
+    
+function drawImage( hsv_img ) {
+    var rgb_img = hsv_to_rgb(hsv_img);
+   
+    var blob = new Blob( [ rgb_img ], { type: "image/jpeg" } );
+    var urlCreator = window.URL || window.webkitURL;
+    var imageUrl = urlCreator.createObjectURL( blob );
+    var img = document.querySelector( "#photo" );
+    img.src = imageUrl;
 }
 </script>
 
