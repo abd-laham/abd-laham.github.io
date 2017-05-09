@@ -229,7 +229,7 @@ function generateImage() {
     
     //out_norm = (out - rmean_decoder0)/rvar_decoder0
     elemwise_add(v300,v300,-1,rmean_decoder0);
-    elemwise_div(v300,v300,rvar_decoder0);
+    elemwise_div(v300,v300,Math.sqrt(rvar_decoder0));
     
     // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
     elemwise_mul(v300,v300,gamma_decoder0);
