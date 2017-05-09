@@ -35,7 +35,9 @@
 <button onclick="drawImage()">Draw it</button>
 
 <p><strong>Note:</strong> input elements with type="range" are not supported in IE 9 and earlier versions.</p>
-    <img id="photo">
+ <canvas id="myCanvas" width="300" height="150" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+    
 <p id="demo"></p>
 
 <script>
@@ -196,7 +198,7 @@ function hsv_to_rgb(hsv_image){
     for (var kk = 0; kk < hsv_image.length/3; kk++){
         var h = hsv_image[kk*3];
         var s = hsv_image[kk*3 + 1];
-        var l = hsv_image[kk*3 + 2];
+        var v = hsv_image[kk*3 + 2];
         
         var r, g, b;
 
@@ -258,12 +260,21 @@ function generateImage() {
 function drawImage() {
     generateImage();
     var rgb_img = hsv_to_rgb(hsv_img_gen);
-   
-    var blob = new Blob( [ rgb_img ], { type: "image/jpeg" } );
-    var urlCreator = window.URL || window.webkitURL;
-    var imageUrl = urlCreator.createObjectURL( blob );
-    var img = document.querySelector( "#photo" );
-    img.src = imageUrl;
+
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    var imgData = ctx.createImageData(192, 128);
+
+    var i;
+    for (i = 0; i < imgData.data.length; i += 4) {
+        imgData.data[i+0] = rgb_img[i];
+        imgData.data[i+1] = rgb_img[i+1];
+        imgData.data[i+2] = rgb_img[i+2];
+        imgData.data[i+3] = 255;
+    }
+
+    ctx.putImageData(imgData, 10, 10);
+
 }
 </script>
 
