@@ -92,7 +92,7 @@ function myMul(target,x,W) {
         target[i] = 0.0
         j = 0;
         for (j = 0; j < x.length; j++){
-            target[i] += W[i + j*x.length];
+            target[i] += W[i*x.length + j];
         }
     }
 //    alert("END!");
