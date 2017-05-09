@@ -264,9 +264,9 @@ function hsv_to_rgb(hsv_image){
         //rgb_img[kk*3 + 1] = g * 255;
         //rgb_img[kk*3 + 2] = b*255;
         
-        imgData.data[kk*4+0] = r * 255;
-        imgData.data[kk*4+1] = g * 255;
-        imgData.data[kk*4+2] = b * 255;
+        imgData.data[kk*4+0] = round(r * 255);
+        imgData.data[kk*4+1] = round(g * 255);
+        imgData.data[kk*4+2] = round(b * 255);
         imgData.data[kk*4+3] = 255;
     }
 }
