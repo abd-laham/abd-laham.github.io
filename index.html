@@ -228,11 +228,9 @@ var v300 = new Float32Array(300);
 var hsv_img_gen = new Float32Array(192*128*3);
 var firstClick = true;
 function generateImage() {
-        alert("before Wmu_output == 0")
 
     if (firstClick) {
         firstClick = false;
-        alert("new Wmu_output")
         Wmu_output = new Float32Array(Wmu_output1.length + Wmu_output2.length);
         for (var i = 0; i < Wmu_output1.length; i++) {
             Wmu_output[i] = Wmu_output1[i];
@@ -241,12 +239,10 @@ function generateImage() {
             Wmu_output[Wmu_output1.length + i] = Wmu_output2[i];
         }
     }
-    alert("for latent")
 
     for (var i = 0; i < 20; i++){
         latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
     }
-    alert("MyMUL!")
 
     //np.dot(latent,W_decoder0)
     myMul(v300,latent,W_decoder0);
@@ -269,11 +265,8 @@ var c = document.getElementById("myCanvas");
 var ctx = c.getContext("2d");
 var imgData = ctx.createImageData(128, 192);
 function drawImage() {
-    alert("START!")
     generateImage();
-    alert("before hsv_to_rgb")
     var rgb_img = hsv_to_rgb(hsv_img_gen);
-    alert('image generated!');
     
 
     var i;
