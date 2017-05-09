@@ -11,26 +11,28 @@
 <input type="range" id="myRange0" value="50"><br>
 <input type="range" id="myRange1" value="50"><br>
 <input type="range" id="myRange2" value="50"><br>
-<input type="range" id="myRange3" value="90"><br>
-<input type="range" id="myRange4" value="90"><br>
-<input type="range" id="myRange5" value="90"><br>
-<input type="range" id="myRange6" value="90"><br>
-<input type="range" id="myRange7" value="90"><br>
-<input type="range" id="myRange8" value="90"><br>
-<input type="range" id="myRange9" value="90"><br>
-<input type="range" id="myRange10" value="90"><br>
-<input type="range" id="myRange11" value="90"><br>
-<input type="range" id="myRange12" value="90"><br>
-<input type="range" id="myRange13" value="90"><br>
-<input type="range" id="myRange14" value="90"><br>
-<input type="range" id="myRange15" value="90"><br>
-<input type="range" id="myRange16" value="90"><br>
-<input type="range" id="myRange17" value="90"><br>
-<input type="range" id="myRange18" value="90"><br>
-<input type="range" id="myRange19" value="90"><br>
+<input type="range" id="myRange3" value="50"><br>
+<input type="range" id="myRange4" value="50"><br>
+<input type="range" id="myRange5" value="50"><br>
+<input type="range" id="myRange6" value="50"><br>
+<input type="range" id="myRange7" value="50"><br>
+<input type="range" id="myRange8" value="50"><br>
+<input type="range" id="myRange9" value="50"><br>
+<input type="range" id="myRange10" value="50"><br>
+<input type="range" id="myRange11" value="50"><br>
+<input type="range" id="myRange12" value="50"><br>
+<input type="range" id="myRange13" value="50"><br>
+<input type="range" id="myRange14" value="50"><br>
+<input type="range" id="myRange15" value="50"><br>
+<input type="range" id="myRange16" value="50"><br>
+<input type="range" id="myRange17" value="50"><br>
+<input type="range" id="myRange18" value="50"><br>
+<input type="range" id="myRange19" value="50"><br>
 <p>Click the button to get the value of the slider control.</p>
 
 <button onclick="myFunction()">Try it</button>
+    
+<button onclick="drawImage()">Draw it</button>
 
 <p><strong>Note:</strong> input elements with type="range" are not supported in IE 9 and earlier versions.</p>
     <img id="photo">
@@ -79,7 +81,7 @@ function elemwise_rect(target,x) {
     return target;
 }
     
-function myMul(target,W,x) {
+function myMul(target,x,W) {
 //    alert("BEGIN!");
     var j = 0;
 //    var my_arr = new Float32Array(W.length / x.length);
@@ -87,7 +89,7 @@ function myMul(target,W,x) {
         target[i] = 0.0
         j = 0;
         for (j = 0; j < x.length; j++){
-            target[i] += W[i*x.length + j];
+            target[i] += W[i + j*x.length];
         }
     }
 //    alert("END!");
@@ -186,8 +188,9 @@ function myFunction() {
     read_array_32("/rvar_decoder0_32.bin","rvar_decoder0");
     
 }
+var rgb_img = new Uint8Array(hsv_image.length);
+
 function hsv_to_rgb(hsv_image){
-    rgb_img = new Uint8Array(hsv_image.length);
         
     for (var kk = 0; kk < hsv_image.length/3; kk++){
         var h = hsv_image[kk*3];
@@ -216,11 +219,35 @@ function hsv_to_rgb(hsv_image){
     }
     return rgb_img;
 }
-
+var latent = new Float32Array(20);
+var v300 = new Float32Array(300);
+var hsv_img_gen = new Float32Array(192*168*3);
+    
 function generateImage() {
+    for (var i = 0; i < 20; i++){
+        latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
+    }
+    
+    //np.dot(latent,W_decoder0)
+    myMul(v300,latent,W_decoder0);
+    
+    //out_norm = (out - rmean_decoder0)/rvar_decoder0
+    elemwise_add(v300,v300,-1,rmean_decoder0);
+    elemwise_div(v300,v300,rvar_decoder0);
+    
+    // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
+    elemwise_mul(v300,v300,gamma_decoder0);
+    elemwise_add(v300,v300,+1,beta_decoder0);
+    elemwise_rect(v300,v300);
+    
+    // img = np.dot(hidden_out,Wmu_output) + bmu_output
+    myMul(hsv_img_gen,v300,Wmu_output)
+    elemwise_add(hsv_img_gen,hsv_img_gen,bmu_output);
+    
 }
-function drawImage( hsv_img ) {
-    var rgb_img = hsv_to_rgb(hsv_img);
+function drawImage() {
+    generateImage();
+    var rgb_img = hsv_to_rgb(hsv_img_gen);
    
     var blob = new Blob( [ rgb_img ], { type: "image/jpeg" } );
     var urlCreator = window.URL || window.webkitURL;
