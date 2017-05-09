@@ -8,8 +8,26 @@
 
 <h3>A demonstration of how to access a Slider Control</h3>
 
-<input type="range" id="myRange" value="90">
-
+<input type="range" id="myRange0" value="90">
+<input type="range" id="myRange1" value="90">
+<input type="range" id="myRange2" value="90">
+<input type="range" id="myRange3" value="90">
+<input type="range" id="myRange4" value="90">
+<input type="range" id="myRange5" value="90">
+<input type="range" id="myRange6" value="90">
+<input type="range" id="myRange7" value="90">
+<input type="range" id="myRange8" value="90">
+<input type="range" id="myRange9" value="90">
+<input type="range" id="myRange10" value="90">
+<input type="range" id="myRange11" value="90">
+<input type="range" id="myRange12" value="90">
+<input type="range" id="myRange13" value="90">
+<input type="range" id="myRange14" value="90">
+<input type="range" id="myRange15" value="90">
+<input type="range" id="myRange16" value="90">
+<input type="range" id="myRange17" value="90">
+<input type="range" id="myRange18" value="90">
+<input type="range" id="myRange19" value="90">
 <p>Click the button to get the value of the slider control.</p>
 
 <button onclick="myFunction()">Try it</button>
@@ -28,20 +46,53 @@ var gamma_decoder0 = 0;
 var rmean_decoder0 = 0;
 var rvar_decoder0 = 0;
 var loaded_files = 0;
-    
-function myMul(W,x) {
-    alert("BEGIN!");
-    var j = 0;
-    var my_arr = new Float32Array(W.length / x.length);
-    for (var i = 0; i < W.length/x.length; i++){
-        my_arr[i] = 0.0
-        j = 0;
-        for (j = 0; j < x.length; j++){
-            my_arr[i] += W[i*x.length + j];
+
+function elemwise_add(target, x1,s,x2){
+    for (var i = 0; i < x1.length; i++){
+        target[i] = x1[i] + s*x2[i]; 
+    }
+    return target;
+}
+
+function elemwise_mul(target,x1,x2){
+    for (var i = 0; i < x1.length; i++){
+        target[i] = x1[i]*x2[i]; 
+    }
+    return target;
+}
+
+function elemwise_div(target,x1,x2){
+    for (var i = 0; i < x1.length; i++){
+        target[i] = x1[i]/x2[i]; 
+    }
+    return target;
+}
+
+function elemwise_rect(target,x) {
+    for (var i = 0; i < x.length; i++){
+        if (x[i] > 0) {
+            target[i] = x[i];
+        } else {
+            target[i] = 0.0;
         }
     }
-    alert("END!");
-    return my_arr;
+    return target;
+}
+    
+function myMul(target,W,x) {
+//    alert("BEGIN!");
+    var j = 0;
+//    var my_arr = new Float32Array(W.length / x.length);
+    for (var i = 0; i < W.length/x.length; i++){
+        target[i] = 0.0
+        j = 0;
+        for (j = 0; j < x.length; j++){
+            target[i] += W[i*x.length + j];
+        }
+    }
+//    alert("END!");
+//    return my_arr;
+    return target;
 }
     function decodeFloat16 (binary) {
     var exponent = (binary & 0x7C00) >> 10;
@@ -165,7 +216,9 @@ function hsv_to_rgb(hsv_image){
     }
     return rgb_img;
 }
-    
+
+function generateImage() {
+}
 function drawImage( hsv_img ) {
     var rgb_img = hsv_to_rgb(hsv_img);
    
