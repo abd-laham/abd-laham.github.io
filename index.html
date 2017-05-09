@@ -27,6 +27,7 @@ var bmu_output = 0;
 var gamma_decoder0 = 0;
 var rmean_decoder0 = 0;
 var rvar_decoder0 = 0;
+var loaded_files = 0;
     
 function myMul(W,x) {
     alert("BEGIN!");
@@ -78,7 +79,10 @@ function read_array_16(filename,varname) {
         }
           
           window[varname] = mFloatArray;
-          alert(varname);
+          alert(varname + ":" + mFloatArray[0]);
+          
+          loaded_files += 1;
+          alert(loaded_files);
       }
     };
 
@@ -108,6 +112,8 @@ function read_array_32(filename,varname) {
           
           window[varname] = mFloatArray;
           alert(varname);
+          loaded_files += 1;
+          alert(loaded_files);
       }
     };
 
