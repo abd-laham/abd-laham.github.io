@@ -258,13 +258,14 @@ function generateImage() {
     elemwise_add(hsv_img_gen,hsv_img_gen,+1,bmu_output);
     
 }
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var imgData = ctx.createImageData(128, 192);
 function drawImage() {
     generateImage();
     var rgb_img = hsv_to_rgb(hsv_img_gen);
-
-    var c = document.getElementById("myCanvas");
-    var ctx = c.getContext("2d");
-    var imgData = ctx.createImageData(128, 192);
+    alert('image generated!');
+    
 
     var i;
     for (i = 0; i < rgb_img.length/3; i++) {
