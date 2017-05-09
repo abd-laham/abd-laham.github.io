@@ -226,7 +226,7 @@ var hsv_img_gen = new Float32Array(192*168*3);
     
 function generateImage() {
     if (Wmu_output == 0) {
-        Wmu_output = Float32Array(Wmu_output1.length + Wmu_output2.length);
+        Wmu_output = new Float32Array(Wmu_output1.length + Wmu_output2.length);
         for (var i = 0; i < Wmu_output1.length; i++) {
             Wmu_output[i] = Wmu_output1[i];
         }
