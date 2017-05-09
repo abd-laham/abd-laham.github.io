@@ -266,11 +266,11 @@ function drawImage() {
     var imgData = ctx.createImageData(192, 128);
 
     var i;
-    for (i = 0; i < imgData.data.length; i += 4) {
-        imgData.data[i+0] = rgb_img[i];
-        imgData.data[i+1] = rgb_img[i+1];
-        imgData.data[i+2] = rgb_img[i+2];
-        imgData.data[i+3] = 255;
+    for (i = 0; i < rgb_img.length/3; i++) {
+        imgData.data[i*3+0] = rgb_img[i*3];
+        imgData.data[i*3+1] = rgb_img[i*3+1];
+        imgData.data[i*3+2] = rgb_img[i*3+2];
+        imgData.data[i*3+3] = 255;
     }
 
     ctx.putImageData(imgData, 10, 10);
