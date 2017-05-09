@@ -87,12 +87,13 @@ function elemwise_rect(target,x) {
 function myMul(target,x,W) {
 //    alert("BEGIN!");
     var j = 0;
+    var k = W.length/x.length;
 //    var my_arr = new Float32Array(W.length / x.length);
-    for (var i = 0; i < W.length/x.length; i++){
+    for (var i = 0; i < k; i++){
         target[i] = 0.0
         j = 0;
         for (j = 0; j < x.length; j++){
-            target[i] += W[i*x.length + j];
+            target[i] += W[i + j*k];
         }
     }
 //    alert("END!");
