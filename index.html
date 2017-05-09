@@ -226,11 +226,12 @@ function hsv_to_rgb(hsv_image){
 var latent = new Float32Array(20);
 var v300 = new Float32Array(300);
 var hsv_img_gen = new Float32Array(192*128*3);
-    
+var firstClick = true;
 function generateImage() {
         alert("before Wmu_output == 0")
 
-    if (Wmu_output == 0) {
+    if (firstClick) {
+        firstClick = false;
         alert("new Wmu_output")
         Wmu_output = new Float32Array(Wmu_output1.length + Wmu_output2.length);
         for (var i = 0; i < Wmu_output1.length; i++) {
