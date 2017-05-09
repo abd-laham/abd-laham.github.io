@@ -19,6 +19,14 @@
 <p id="demo"></p>
 
 <script>
+var W_decoder0 = 0;
+var Wmu_output1 = 0;
+var Wmu_output2 = 0;
+var beta_decoder0 = 0;
+var bmu_output = 0;
+var gamma_decoder0 = 0;
+var rmean_decoder0 = 0;
+var rvar_decoder0 = 0;
     
 function myMul(W,x) {
     alert("BEGIN!");
@@ -47,7 +55,66 @@ function myMul(W,x) {
         6.103515625e-5 * (fraction / 0x400)
     );
 };
-    
+
+function read_array_16(filename,varname) {
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", filename, true);
+    oReq.responseType = "arraybuffer";
+
+    oReq.onload = function (oEvent) {
+      var arrayBuffer = oReq.response; // Note: not oReq.responseText
+      if (arrayBuffer) {
+        var dataview = new DataView(arrayBuffer);
+
+        // Create buffer (4 bytes / float)
+        var mFloatArray = new Float32Array(arrayBuffer.byteLength / 2);
+
+        // Copy floats
+         tmp = 0.0;
+        for (var i = 0; i < mFloatArray.length; i++) 
+        {
+            mFloatArray[i] = decodeFloat16(dataview.getUint16(i * 2,true)); // At every 4th byte
+            tmp += mFloatArray[i];
+        }
+          
+          window[varname] = mFloatArray;
+          alert(varname);
+      }
+    };
+
+    oReq.send(null);
+}
+
+function read_array_32(filename,varname) {
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", filename, true);
+    oReq.responseType = "arraybuffer";
+
+    oReq.onload = function (oEvent) {
+      var arrayBuffer = oReq.response; // Note: not oReq.responseText
+      if (arrayBuffer) {
+        var dataview = new DataView(arrayBuffer);
+
+        // Create buffer (4 bytes / float)
+        var mFloatArray = new Float32Array(arrayBuffer.byteLength / 4);
+
+        // Copy floats
+         tmp = 0.0;
+        for (var i = 0; i < mFloatArray.length; i++) 
+        {
+            mFloatArray[i] = dataview.getFloat32(i * 4,true); // At every 4th byte
+            tmp += mFloatArray[i];
+        }
+          
+          window[varname] = mFloatArray;
+          alert(varname);
+      }
+    };
+
+    oReq.send(null);
+}
+
+
 function myFunction() {
     var oReq = new XMLHttpRequest();
     oReq.open("GET", "/W_decoder0.bin", true);
