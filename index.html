@@ -221,8 +221,8 @@ function myFunction() {
 
     read_array_32("/msemodel/rmean_output.bin",mse_model,"rmean_output");
     read_array_32("/msemodel/rvar_output.bin",mse_model,"rvar_output");
-    read_array_32("/msemodel/gamma_output.bin",mse_model,"gamma_output");
-    read_array_32("/msemodel/beta_output.bin",mse_model,"beta_output");
+    read_array_16("/msemodel/gamma_output.bin",mse_model,"gamma_output");
+    read_array_16("/msemodel/beta_output.bin",mse_model,"beta_output");
 
 }
 var rgb_img = new Uint8Array(192*128*3);
