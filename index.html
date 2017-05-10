@@ -288,6 +288,13 @@ function drawImage_test() {
 }
 function drawImage() {
     generateImage();
+    for (var i = 0; i < hsv_img_gen.length; i++){
+        if (hsv_img_gen[i] < 0) {
+            hsv_img_gen[i] = 0;
+        } else if (hsv_img_gen[i] > 1) {
+            hsv_img_gen[i] = 1;
+        }
+    }
     hsv_to_rgb(hsv_img_gen);
 //    var rgb_img = hsv_to_rgb(hsv_img_gen);
     
