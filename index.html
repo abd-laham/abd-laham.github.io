@@ -9,26 +9,26 @@
 <h3>A demonstration of how to access a Slider Control</h3>
 <table>
     <tr><td>
-<input type="range" id="myRange0" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange1" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange2" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange3" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange4" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange5" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange6" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange7" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange8" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange9" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange10" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange11" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange12" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange13" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange14" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange15" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange16" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange17" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange18" onmousemove="scroll_move()" value="50"><br>
-<input type="range" id="myRange19" onmousemove="scroll_move()" value="50"><br>
+<input type="range" id="myRange0" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange1" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange2" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange3" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange4" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange5" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange6" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange7" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange8" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange9" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange10" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange11" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange12" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange13" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange14" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange15" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange16" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange17" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange18" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange19" onmousemove="scroll_move(event)" value="50"><br>
         </td>
         <td>
              <canvas id="myCanvas" width="300" height="300" style="border:1px solid #d3d3d3;">
@@ -310,7 +310,7 @@ function drawImage() {
 
 }
     
-function scroll_move(){
+function scroll_move(e){
  if (loaded_files == 9) {
     var changed = false;
     for (var i = 0; i < 20; i++){
