@@ -58,7 +58,7 @@ var gamma_decoder0 = 0;
 var rmean_decoder0 = 0;
 var rvar_decoder0 = 0;
 var loaded_files = 0;
-
+var total_files = 0;
 function elemwise_add(target, x1,s,x2){
     for (var i = 0; i < x1.length; i++){
         target[i] = x1[i] + s*x2[i]; 
@@ -122,6 +122,7 @@ function myMul(target,x,W) {
 };
 
 function read_array_16(filename,obj,varname) {
+    total_files++;
     var oReq = new XMLHttpRequest();
     oReq.open("GET", filename, true);
     oReq.responseType = "arraybuffer";
@@ -146,7 +147,7 @@ function read_array_16(filename,obj,varname) {
           //alert(varname + ":" + mFloatArray[0]);
           
           loaded_files += 1;
-          document.getElementById("loaded_count").innerHTML = loaded_files;
+          document.getElementById("loaded_count").innerHTML = loaded_files +"/" + total_files;
 
           //alert(loaded_files);
       }
@@ -156,6 +157,7 @@ function read_array_16(filename,obj,varname) {
 }
 
 function read_array_32(filename,obj,varname) {
+    total_files++;
     var oReq = new XMLHttpRequest();
     oReq.open("GET", filename, true);
     oReq.responseType = "arraybuffer";
@@ -179,7 +181,7 @@ function read_array_32(filename,obj,varname) {
           obj[varname] = mFloatArray;
           //alert(varname);
           loaded_files += 1;
-          document.getElementById("loaded_count").innerHTML = loaded_files;
+          document.getElementById("loaded_count").innerHTML = loaded_files +"/" + total_files;
           //alert(loaded_files);
       }
     };
@@ -217,6 +219,11 @@ function myFunction() {
     read_array_32("/msemodel/rmean_decoder0.bin",mse_model,"rmean_decoder0");
     read_array_32("/msemodel/rvar_decoder0.bin",mse_model,"rvar_decoder0");
 
+    read_array_32("/msemodel/rmean_output.bin",mse_model,"rmean_output");
+    read_array_32("/msemodel/rvar_output.bin",mse_model,"rvar_output");
+    read_array_32("/msemodel/gamma_output.bin",mse_model,"gamma_output");
+    read_array_32("/msemodel/beta_output.bin",mse_model,"beta_output");
+
 }
 var rgb_img = new Uint8Array(192*128*3);
 
@@ -227,7 +234,7 @@ var firstClick = true;
 
 //var imgData = ctx.createImageData(128, 192);
     
-function generateImage(mdl) {
+function generateImage_gaussian(mdl) {
 
     if (typeof mdl.Wmu_output == 'undefined') {
         mdl.Wmu_output = new Float32Array(mdl.Wmu_output1.length + mdl.Wmu_output2.length);
@@ -271,6 +278,62 @@ function generateImage(mdl) {
     }
 }
 
+function generateImage_mse(mdl) {
+
+    if (typeof mdl.Wmu_output == 'undefined') {
+        mdl.Wmu_output = new Float32Array(mdl.Wmu_output1.length + mdl.Wmu_output2.length);
+        for (var i = 0; i < mdl.Wmu_output1.length; i++) {
+            mdl.Wmu_output[i] = mdl.Wmu_output1[i];
+        }
+        for (var i = 0; i < mdl.Wmu_output2.length; i++) {
+            mdl.Wmu_output[mdl.Wmu_output1.length + i] = mdl.Wmu_output2[i];
+        }
+        
+        for (var i = 0; i < mdl.rvar_decoder0.length; i++) {
+            mdl.rvar_decoder0[i] = Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
+        }
+        for (var i = 0; i < mdl.rvar_output.length; i++) {
+            mdl.rvar_output[i] = Math.sqrt(mdl.rvar_output[i] + 0.0001);
+        }
+    }
+
+    for (var i = 0; i < 20; i++){
+        latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
+    }
+
+    //np.dot(latent,W_decoder0)
+    myMul(v300,latent,mdl.W_decoder0);
+    
+    //out_norm = (out - rmean_decoder0)/rvar_decoder0
+    elemwise_add(v300,v300,-1,mdl.rmean_decoder0);
+    elemwise_div(v300,v300,mdl.rvar_decoder0);
+    
+    // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
+    elemwise_mul(v300,v300,mdl.gamma_decoder0);
+    elemwise_add(v300,v300,+1,mdl.beta_decoder0);
+    elemwise_rect(v300,v300);
+    
+    // img = np.dot(hidden_out,Wmu_output) + bmu_output
+    myMul(mdl.hsv_img_gen,v300,mdl.Wmu_output)
+    
+    //normout = (out1 - rmean_output)/(T.sqrt(rvar_output+0.0001))
+    elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,-1,mdl.rmean_output);
+    elemwise_div(mdl.hsv_img_gen,mdl.hsv_img_gen,mdl.rvar_output);
+    
+    // out = rect(gamma_output *normout + beta_output)
+    elemwise_mul(mdl.hsv_img_gen,mdl.hsv_img_gen,mdl.gamma_output);
+    elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,+1,mdl.beta_output);
+    elemwise_rect(mdl.hsv_img_gen,mdl.hsv_img_gen);
+    for (var i = 0; i < mdl.hsv_img_gen.length; i++){
+        if (mdl.hsv_img_gen[i] < 0) {
+            mdl.hsv_img_gen[i] = 0;
+        } else if (mdl.hsv_img_gen[i] > 1) {
+            mdl.hsv_img_gen[i] = 1;
+        }
+    }
+}
+
+    
 function hsv_to_rgb(mdl){
         
     for (var kk = 0; kk < mdl.hsv_img_gen.length/3; kk++){
@@ -312,9 +375,9 @@ function hsv_to_rgb(mdl){
 //    ctx.putImageData(imgData, 10, 10);
 //}
 function drawImage() {
-    generateImage(gaussian_model);
+    generateImage_gaussian(gaussian_model);
     hsv_to_rgb(gaussian_model);
-    generateImage(mse_model);
+    generateImage_mse(mse_model);
     hsv_to_rgb(mse_model);
 //    var rgb_img = hsv_to_rgb(hsv_img_gen);
     
@@ -333,7 +396,7 @@ function drawImage() {
 }
 var lastTime = 0;
 function scroll_move(e){
- if (loaded_files == 16) {
+ if (loaded_files == total_files) {
     var changed = false;
     var passedEnoughTime = false;
     for (var i = 0; i < 20; i++){
