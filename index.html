@@ -146,6 +146,8 @@ function read_array_16(filename,obj,varname) {
           //alert(varname + ":" + mFloatArray[0]);
           
           loaded_files += 1;
+          document.getElementById("loaded_count").innerHTML = loaded_files;
+
           //alert(loaded_files);
       }
     };
