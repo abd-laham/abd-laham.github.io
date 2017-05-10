@@ -36,7 +36,7 @@
              <canvas id="myCanvas" width="500" height="300" style="border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas> <br>
             <button onclick="drawImage()">Draw it</button>
-<button onclick="drawImage_test()">test</button>
+<button onclick="reset_sliders()">reset</button>
         </td></tr></table>
 <p>Click the button to get the value of the slider control.</p>
 
@@ -374,6 +374,11 @@ function hsv_to_rgb(mdl){
 
 //    ctx.putImageData(imgData, 10, 10);
 //}
+function reset_sliders(){
+    for (var i = 0; i < 20; i++){
+        document.getElementById("myRange" + i).value = "50"
+    }
+}
 function drawImage() {
     generateImage_gaussian(gaussian_model);
     hsv_to_rgb(gaussian_model);
