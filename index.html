@@ -33,7 +33,7 @@
 <input type="range" id="myRange19" onmousemove="scroll_move(event)" value="50"><br>
         </td>
         <td>
-             <canvas id="myCanvas" width="300" height="300" style="border:1px solid #d3d3d3;">
+             <canvas id="myCanvas" width="500" height="300" style="border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas> <br>
             <button onclick="drawImage()">Draw it</button>
 <button onclick="drawImage_test()">test</button>
@@ -206,16 +206,16 @@ function myFunction() {
     read_array_32("/gaussiancost/rvar_decoder0_32.bin",gaussian_model,"rvar_decoder0");
 
     // mse_model
-    //read_array_16("/msemodel/W_decoder0.bin",mse_model,"W_decoder0");
-    //read_array_16("/msemodel/Wmu_output1.bin",mse_model,"Wmu_output1");
-    //read_array_16("/msemodel/Wmu_output2.bin",mse_model,"Wmu_output2");
-    //read_array_16("/msemodel/bmu_output.bin",mse_model,"bmu_output");
+    read_array_16("/msemodel/W_decoder0.bin",mse_model,"W_decoder0");
+    read_array_16("/msemodel/Wmu_output1.bin",mse_model,"Wmu_output1");
+    read_array_16("/msemodel/Wmu_output2.bin",mse_model,"Wmu_output2");
+    read_array_16("/msemodel/bmu_output.bin",mse_model,"bmu_output");
     
-    //read_array_16("/msemodel/beta_decoder0.bin",mse_model,"beta_decoder0");
-    //read_array_16("/msemodel/gamma_decoder0.bin",mse_model,"gamma_decoder0");
+    read_array_16("/msemodel/beta_decoder0.bin",mse_model,"beta_decoder0");
+    read_array_16("/msemodel/gamma_decoder0.bin",mse_model,"gamma_decoder0");
 
-    //read_array_32("/msemodel/rmean_decoder0_32.bin",mse_model,"rmean_decoder0");
-    //read_array_32("/msemodel/rvar_decoder0_32.bin",mse_model,"rvar_decoder0");
+    read_array_32("/msemodel/rmean_decoder0_32.bin",mse_model,"rmean_decoder0");
+    read_array_32("/msemodel/rvar_decoder0_32.bin",mse_model,"rvar_decoder0");
 
 }
 var rgb_img = new Uint8Array(192*128*3);
@@ -313,8 +313,9 @@ function hsv_to_rgb(mdl){
 //}
 function drawImage() {
     generateImage(gaussian_model);
-    
     hsv_to_rgb(gaussian_model);
+    generateImage(mse_model);
+    hsv_to_rgb(mse_model);
 //    var rgb_img = hsv_to_rgb(hsv_img_gen);
     
 
@@ -327,6 +328,7 @@ function drawImage() {
 //    }
 
     ctx.putImageData(gaussian_model.imgData, 10, 10);
+    ctx.putImageData(mse_model.imgData, 210, 10);
 
 }
 var lastTime = 0;
