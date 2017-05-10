@@ -309,17 +309,25 @@ function drawImage() {
     ctx.putImageData(imgData, 10, 10);
 
 }
-    
+var lastTime = 0;
 function scroll_move(e){
  if (loaded_files == 9) {
     var changed = false;
+    var passedEnoughTime = false;
     for (var i = 0; i < 20; i++){
         if (Math.abs(latent[i] - 12.0*(document.getElementById("myRange" + i).value - 50)/50.0) > 0.001){
             changed = true;
             break;
         }
     }
-    if (changed) drawImage()
+    curTime = Date.now();
+    if (curTime - lastTime > 100)
+        passedEnoughTime = true;
+    lastTime = curTime;
+
+    if (changed & passedEnoughTime) {
+        drawImage()
+    }
  }
 }
 </script>
