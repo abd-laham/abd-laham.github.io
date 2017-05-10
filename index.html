@@ -34,7 +34,7 @@
              <canvas id="myCanvas" width="300" height="300" style="border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas> <br>
             <button onclick="drawImage()">Draw it</button>
-
+<button onclick="drawImage_test()">test</button>
         </td></tr></table>
 <p>Click the button to get the value of the slider control.</p>
 
@@ -195,7 +195,7 @@ function myFunction() {
 
     read_array_32("/rmean_decoder0_32.bin","rmean_decoder0");
     read_array_32("/rvar_decoder0_32.bin","rvar_decoder0");
-    
+    read_array_32("/koko.bin","koko_img");
 }
 var rgb_img = new Uint8Array(192*128*3);
 
@@ -279,7 +279,13 @@ function hsv_to_rgb(hsv_image){
         imgData.data[kk*4+3] = 255;
     }
 }
-    
+
+function drawImage_test() {
+    hsv_to_rgb(koko_img);
+
+
+    ctx.putImageData(imgData, 10, 10);
+}
 function drawImage() {
     generateImage();
     hsv_to_rgb(hsv_img_gen);
