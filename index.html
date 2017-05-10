@@ -7,6 +7,8 @@
 <body>
 
 <h3>A demonstration of how to access a Slider Control</h3>
+ <p id="loaded_count">0</p>
+
 <table>
     <tr><td>
 <input type="range" id="myRange0" onmousemove="scroll_move(event)" value="50"><br>
@@ -175,12 +177,16 @@ function read_array_32(filename,obj,varname) {
           obj[varname] = mFloatArray;
           //alert(varname);
           loaded_files += 1;
+          document.getElementById("loaded_count").innerHTML = loaded_files;
           //alert(loaded_files);
       }
     };
 
     oReq.send(null);
 }
+    
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
 var gaussian_model = {hsv_img_gen: new Float32Array(192*128*3),imgData : ctx.createImageData(128, 192)};
 var mse_model = {hsv_img_gen : new Float32Array(192*128*3),imgData : ctx.createImageData(128, 192)};
     
@@ -216,8 +222,7 @@ var latent = new Float32Array(20);
 var v300 = new Float32Array(300);
 //var hsv_img_gen = new Float32Array(192*128*3);
 var firstClick = true;
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
+
 //var imgData = ctx.createImageData(128, 192);
     
 function generateImage(mdl) {
