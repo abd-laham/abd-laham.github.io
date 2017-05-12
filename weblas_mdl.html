@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+    <head> 
+<script type="text/javascript" src="weblas.js"></script>
+    </head>
+    
+<body>
+
+<h3>A demonstration of how to access a Slider Control</h3>
+ <p id="loaded_count">0</p>
+
+<table>
+    <tr><td>
+<input type="range" id="myRange0" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange1" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange2" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange3" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange4" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange5" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange6" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange7" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange8" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange9" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange10" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange11" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange12" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange13" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange14" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange15" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange16" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange17" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange18" onmousemove="scroll_move(event)" value="50"><br>
+<input type="range" id="myRange19" onmousemove="scroll_move(event)" value="50"><br>
+        </td>
+        <td>
+             <canvas id="myCanvas" width="500" height="300" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas> <br>
+            <button onclick="drawImage()">Draw it</button>
+<button onclick="reset_sliders()">reset</button>
+        </td></tr></table>
+<p>Click the button to get the value of the slider control.</p>
+
+<button onclick="myFunction()">Try it</button>
+    
+
+<p><strong>Note:</strong> input elements with type="range" are not supported in IE 9 and earlier versions.</p>
+    
+<p id="demo"></p>
+
+<script>
+var W_decoder0 = 0;
+var Wmu_output1 = 0;
+var Wmu_output2 = 0;
+var Wmu_output = 0;
+var beta_decoder0 = 0;
+var bmu_output = 0;
+var gamma_decoder0 = 0;
+var rmean_decoder0 = 0;
+var rvar_decoder0 = 0;
+var loaded_files = 0;
+var total_files = 0;
+function elemwise_add(target, x1,s,x2){
+    for (var i = 0; i < x1.length; i++){
+        target[i] = x1[i] + s*x2[i]; 
+    }
+    return target;
+}
+function elemwise_mul(target,x1,x2){
+    for (var i = 0; i < x1.length; i++){
+        target[i] = x1[i]*x2[i]; 
+    }
+    return target;
+}
+function elemwise_div(target,x1,x2){
+    for (var i = 0; i < x1.length; i++){
+        target[i] = x1[i]/x2[i]; 
+    }
+    return target;
+}
+function elemwise_rect(target,x) {
+    for (var i = 0; i < x.length; i++){
+        if (x[i] > 0) {
+            target[i] = x[i];
+        } else {
+            target[i] = 0.0;
+        }
+    }
+    return target;
+}
+    
+function myMul(target,x,W) {
+//    alert("BEGIN!");
+    var j = 0;
+    var k = W.length/x.length;
+//    var my_arr = new Float32Array(W.length / x.length);
+    for (var i = 0; i < k; i++){
+        target[i] = 0.0
+        j = 0;
+        for (j = 0; j < x.length; j++){
+            target[i] += x[j]*W[i + j*k];
+        }
+    }
+//    alert("END!");
+//    return my_arr;
+    return target;
+}
+    function decodeFloat16 (binary) {
+    var exponent = (binary & 0x7C00) >> 10;
+        fraction = binary & 0x03FF;
+    return (binary >> 15 ? -1 : 1) * (
+        exponent ?
+        (
+            exponent === 0x1F ?
+            fraction ? NaN : Infinity :
+            Math.pow(2, exponent - 15) * (1 + fraction / 0x400)
+        ) :
+        6.103515625e-5 * (fraction / 0x400)
+    );
+};
+function read_array_16(filename,obj,varname) {
+    total_files++;
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", filename, true);
+    oReq.responseType = "arraybuffer";
+    oReq.onload = function (oEvent) {
+      var arrayBuffer = oReq.response; // Note: not oReq.responseText
+      if (arrayBuffer) {
+        var dataview = new DataView(arrayBuffer);
+        // Create buffer (4 bytes / float)
+        var mFloatArray = new Float32Array(arrayBuffer.byteLength / 2);
+        // Copy floats
+         tmp = 0.0;
+        for (var i = 0; i < mFloatArray.length; i++) 
+        {
+            mFloatArray[i] = decodeFloat16(dataview.getUint16(i * 2,true)); // At every 4th byte
+            tmp += mFloatArray[i];
+        }
+          
+          obj[varname] = mFloatArray;
+          //alert(varname + ":" + mFloatArray[0]);
+          
+          loaded_files += 1;
+          document.getElementById("loaded_count").innerHTML = loaded_files +"/" + total_files;
+          //alert(loaded_files);
+      }
+    };
+    oReq.send(null);
+}
+function read_array_32(filename,obj,varname) {
+    total_files++;
+    var oReq = new XMLHttpRequest();
+    oReq.open("GET", filename, true);
+    oReq.responseType = "arraybuffer";
+    oReq.onload = function (oEvent) {
+      var arrayBuffer = oReq.response; // Note: not oReq.responseText
+      if (arrayBuffer) {
+        var dataview = new DataView(arrayBuffer);
+        // Create buffer (4 bytes / float)
+        var mFloatArray = new Float32Array(arrayBuffer.byteLength / 4);
+        // Copy floats
+         tmp = 0.0;
+        for (var i = 0; i < mFloatArray.length; i++) 
+        {
+            mFloatArray[i] = dataview.getFloat32(i * 4,true); // At every 4th byte
+            tmp += mFloatArray[i];
+        }
+          
+          obj[varname] = mFloatArray;
+          //alert(varname);
+          loaded_files += 1;
+          document.getElementById("loaded_count").innerHTML = loaded_files +"/" + total_files;
+          //alert(loaded_files);
+      }
+    };
+    oReq.send(null);
+}
+    
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var gaussian_model = {hsv_img_gen: new Float32Array(192*128*3),imgData : ctx.createImageData(128, 192)};
+var mse_model = {hsv_img_gen : new Float32Array(192*128*3),imgData : ctx.createImageData(128, 192)};
+    
+function myFunction() {
+    // gaussian Model
+    read_array_16("/gaussiancost/W_decoder0.bin",gaussian_model,"W_decoder0");
+    read_array_16("/gaussiancost/Wmu_output1.bin",gaussian_model,"Wmu_output1");
+    read_array_16("/gaussiancost/Wmu_output2.bin",gaussian_model,"Wmu_output2");
+    read_array_16("/gaussiancost/bmu_output.bin",gaussian_model,"bmu_output");
+    
+    read_array_16("/gaussiancost/beta_decoder0.bin",gaussian_model,"beta_decoder0");
+    read_array_16("/gaussiancost/gamma_decoder0.bin",gaussian_model,"gamma_decoder0");
+    read_array_32("/gaussiancost/rmean_decoder0_32.bin",gaussian_model,"rmean_decoder0");
+    read_array_32("/gaussiancost/rvar_decoder0_32.bin",gaussian_model,"rvar_decoder0");
+    // mse_model
+    read_array_16("/msemodel/W_decoder0.bin",mse_model,"W_decoder0");
+    read_array_16("/msemodel/Wmu_output1.bin",mse_model,"Wmu_output1");
+    read_array_16("/msemodel/Wmu_output2.bin",mse_model,"Wmu_output2");
+    read_array_16("/msemodel/bmu_output.bin",mse_model,"bmu_output");
+    
+    read_array_16("/msemodel/beta_decoder0.bin",mse_model,"beta_decoder0");
+    read_array_16("/msemodel/gamma_decoder0.bin",mse_model,"gamma_decoder0");
+    read_array_32("/msemodel/rmean_decoder0.bin",mse_model,"rmean_decoder0");
+    read_array_32("/msemodel/rvar_decoder0.bin",mse_model,"rvar_decoder0");
+    read_array_32("/msemodel/rmean_output.bin",mse_model,"rmean_output");
+    read_array_32("/msemodel/rvar_output.bin",mse_model,"rvar_output");
+    read_array_16("/msemodel/gamma_output.bin",mse_model,"gamma_output");
+    read_array_16("/msemodel/beta_output.bin",mse_model,"beta_output");
+}
+var rgb_img = new Uint8Array(192*128*3);
+var latent = new Float32Array(20);
+var v300 = new Float32Array(300);
+//var hsv_img_gen = new Float32Array(192*128*3);
+var firstClick = true;
+//var imgData = ctx.createImageData(128, 192);
+    
+function generateImage_gaussian(mdl) {
+    if (typeof mdl.Wmu_output == 'undefined') {
+        mdl.Wmu_output = new Float32Array(mdl.Wmu_output1.length + mdl.Wmu_output2.length);
+        for (var i = 0; i < mdl.Wmu_output1.length; i++) {
+            mdl.Wmu_output[i] = mdl.Wmu_output1[i];
+        }
+        for (var i = 0; i < mdl.Wmu_output2.length; i++) {
+            mdl.Wmu_output[mdl.Wmu_output1.length + i] = mdl.Wmu_output2[i];
+        }
+        
+        for (var i = 0; i < mdl.rvar_decoder0.length; i++) {
+            mdl.rvar_decoder0[i] = Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
+        }
+    }
+    for (var i = 0; i < 20; i++){
+        latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
+    }
+    //np.dot(latent,W_decoder0)
+    myMul(v300,latent,mdl.W_decoder0);
+    
+    //out_norm = (out - rmean_decoder0)/rvar_decoder0
+    elemwise_add(v300,v300,-1,mdl.rmean_decoder0);
+    elemwise_div(v300,v300,mdl.rvar_decoder0);
+    
+    // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
+    elemwise_mul(v300,v300,mdl.gamma_decoder0);
+    elemwise_add(v300,v300,+1,mdl.beta_decoder0);
+    elemwise_rect(v300,v300);
+    
+    // img = np.dot(hidden_out,Wmu_output) + bmu_output
+    myMul(mdl.hsv_img_gen,v300,mdl.Wmu_output)
+    elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,+1,mdl.bmu_output);
+    for (var i = 0; i < mdl.hsv_img_gen.length; i++){
+        if (mdl.hsv_img_gen[i] < 0) {
+            mdl.hsv_img_gen[i] = 0;
+        } else if (mdl.hsv_img_gen[i] > 1) {
+            mdl.hsv_img_gen[i] = 1;
+        }
+    }
+}
+function generateImage_mse(mdl) {
+    if (typeof mdl.Wmu_output == 'undefined') {
+        mdl.Wmu_output = new Float32Array(mdl.Wmu_output1.length + mdl.Wmu_output2.length);
+        for (var i = 0; i < mdl.Wmu_output1.length; i++) {
+            mdl.Wmu_output[i] = mdl.Wmu_output1[i];
+        }
+        for (var i = 0; i < mdl.Wmu_output2.length; i++) {
+            mdl.Wmu_output[mdl.Wmu_output1.length + i] = mdl.Wmu_output2[i];
+        }
+        
+        for (var i = 0; i < mdl.rvar_decoder0.length; i++) {
+            mdl.rvar_decoder0[i] = Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
+        }
+        for (var i = 0; i < mdl.rvar_output.length; i++) {
+            mdl.rvar_output[i] = Math.sqrt(mdl.rvar_output[i] + 0.0001);
+        }
+    }
+    for (var i = 0; i < 20; i++){
+        latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
+    }
+    //np.dot(latent,W_decoder0)
+    myMul(v300,latent,mdl.W_decoder0);
+    
+    //out_norm = (out - rmean_decoder0)/rvar_decoder0
+    elemwise_add(v300,v300,-1,mdl.rmean_decoder0);
+    elemwise_div(v300,v300,mdl.rvar_decoder0);
+    
+    // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
+    elemwise_mul(v300,v300,mdl.gamma_decoder0);
+    elemwise_add(v300,v300,+1,mdl.beta_decoder0);
+    elemwise_rect(v300,v300);
+    
+    // img = np.dot(hidden_out,Wmu_output) + bmu_output
+    myMul(mdl.hsv_img_gen,v300,mdl.Wmu_output)
+    
+    //normout = (out1 - rmean_output)/(T.sqrt(rvar_output+0.0001))
+    elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,-1,mdl.rmean_output);
+    elemwise_div(mdl.hsv_img_gen,mdl.hsv_img_gen,mdl.rvar_output);
+    
+    // out = rect(gamma_output *normout + beta_output)
+    elemwise_mul(mdl.hsv_img_gen,mdl.hsv_img_gen,mdl.gamma_output);
+    elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,+1,mdl.beta_output);
+    elemwise_rect(mdl.hsv_img_gen,mdl.hsv_img_gen);
+    for (var i = 0; i < mdl.hsv_img_gen.length; i++){
+        if (mdl.hsv_img_gen[i] < 0) {
+            mdl.hsv_img_gen[i] = 0;
+        } else if (mdl.hsv_img_gen[i] > 1) {
+            mdl.hsv_img_gen[i] = 1;
+        }
+    }
+}
+    
+function hsv_to_rgb(mdl){
+        
+    for (var kk = 0; kk < mdl.hsv_img_gen.length/3; kk++){
+        var h = mdl.hsv_img_gen[kk*3];
+        var s = mdl.hsv_img_gen[kk*3 + 1];
+        var v = mdl.hsv_img_gen[kk*3 + 2];
+        
+        var r, g, b;
+        var i = Math.floor(h * 6);
+        var f = h * 6 - i;
+        var p = v * (1 - s);
+        var q = v * (1 - f * s);
+        var t = v * (1 - (1 - f) * s);
+        switch(i % 6){
+            case 0: r = v, g = t, b = p; break;
+            case 1: r = q, g = v, b = p; break;
+            case 2: r = p, g = v, b = t; break;
+            case 3: r = p, g = q, b = v; break;
+            case 4: r = t, g = p, b = v; break;
+            case 5: r = v, g = p, b = q; break;
+        }
+        //rgb_img[kk*3] = r * 255;
+        //rgb_img[kk*3 + 1] = g * 255;
+        //rgb_img[kk*3 + 2] = b*255;
+        
+        mdl.imgData.data[kk*4+0] = Math.round(r * 255);
+        mdl.imgData.data[kk*4+1] = Math.round(g * 255);
+        mdl.imgData.data[kk*4+2] = Math.round(b * 255);
+        mdl.imgData.data[kk*4+3] = 255;
+    }
+}
+//function drawImage_test() {
+//    hsv_to_rgb(koko_img);
+//    ctx.putImageData(imgData, 10, 10);
+//}
+function reset_sliders(){
+    for (var i = 0; i < 20; i++){
+        document.getElementById("myRange" + i).value = "50"
+    }
+}
+function drawImage() {
+    generateImage_gaussian(gaussian_model);
+    hsv_to_rgb(gaussian_model);
+    generateImage_mse(mse_model);
+    hsv_to_rgb(mse_model);
+//    var rgb_img = hsv_to_rgb(hsv_img_gen);
+    
+//    var i;
+//    for (i = 0; i < rgb_img.length/3; i++) {
+//        imgData.data[i*4+0] = rgb_img[i*3];
+//        imgData.data[i*4+1] = rgb_img[i*3+1];
+//        imgData.data[i*4+2] = rgb_img[i*3+2];
+//        imgData.data[i*4+3] = 255;
+//    }
+    ctx.putImageData(gaussian_model.imgData, 10, 10);
+    ctx.putImageData(mse_model.imgData, 210, 10);
+}
+var lastTime = 0;
+function scroll_move(e){
+ if (loaded_files == total_files) {
+    var changed = false;
+    var passedEnoughTime = false;
+    for (var i = 0; i < 20; i++){
+        if (Math.abs(latent[i] - 12.0*(document.getElementById("myRange" + i).value - 50)/50.0) > 0.001){
+            changed = true;
+            break;
+        }
+    }
+    curTime = Date.now();
+    if (curTime - lastTime > 250)
+        passedEnoughTime = true;
+    lastTime = curTime;
+    if (changed & passedEnoughTime) {
+        drawImage()
+    }
+ }
+}
+</script>
+
+</body>
+</html>
