@@ -267,7 +267,7 @@ function generateImage_gaussian(mdl) {
     //elemwise_add(v300,v300,+1,mdl.beta_decoder0);
     //elemwise_rect(v300,v300);
     var v300_4 = weblas.pipeline.sgemm(1,v300_3,mdl.wb_Wmu_output,+1,mdl.wb_bmu_output)
-    mdl.hsv_img_gen = weblas.pipeline.sclmp(1,0,v300_4);
+    mdl.hsv_img_gen = weblas.pipeline.sclmp(1,0,v300_4).transfer();
     // img = np.dot(hidden_out,Wmu_output) + bmu_output
     //myMul(mdl.hsv_img_gen,v300,mdl.Wmu_output)
     //elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,+1,mdl.bmu_output);
