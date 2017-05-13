@@ -261,7 +261,7 @@ function generateImage_gaussian(mdl) {
 //    elemwise_div(v300,v300,mdl.rvar_decoder0);
     var v300_2 = weblas.pipeline.sgemm(1,v300_1,mdl.wb_gamma_over_rsd_decoder0,+1,mdl.wb_beta_decoder0)
     
-    var v300_3 = weblas.pipeline.sclmp(null,0,v300_2,);
+    var v300_3 = weblas.pipeline.sclmp(null,0,v300_2);
     // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
     //elemwise_mul(v300,v300,mdl.gamma_decoder0);
     //elemwise_add(v300,v300,+1,mdl.beta_decoder0);
