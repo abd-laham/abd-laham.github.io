@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head> 
-<script type="text/javascript" src="weblas.js"></script>
     </head>
     
 <body>
@@ -47,6 +46,7 @@ Your browser does not support the HTML5 canvas tag.</canvas> <br>
     
 <p id="demo"></p>
 
+    <script type="text/javascript" src="weblas.js"></script>
 <script>
 var W_decoder0 = 0;
 var Wmu_output1 = 0;
@@ -183,8 +183,8 @@ var mse_model = {hsv_img_gen : new Float32Array(192*128*3),imgData : ctx.createI
 function myFunction() {
     // gaussian Model
     read_array_16("/gaussiancost/W_decoder0.bin",gaussian_model,"W_decoder0");
-    read_array_16("/gaussiancost/Wmu_output1.bin",gaussian_model,"Wmu_output1");
-    read_array_16("/gaussiancost/Wmu_output2.bin",gaussian_model,"Wmu_output2");
+//    read_array_16("/gaussiancost/Wmu_output1.bin",gaussian_model,"Wmu_output1");
+//    read_array_16("/gaussiancost/Wmu_output2.bin",gaussian_model,"Wmu_output2");
     read_array_16("/gaussiancost/bmu_output.bin",gaussian_model,"bmu_output");
     
     read_array_16("/gaussiancost/beta_decoder0.bin",gaussian_model,"beta_decoder0");
@@ -225,21 +225,19 @@ function generate_sqMat(diag){
     return res;
 }
 function generateImage_gaussian(mdl) {
-    if (typeof mdl.Wmu_output == 'undefined') {
-        mdl.Wmu_output = new Float32Array(mdl.Wmu_output1.length + mdl.Wmu_output2.length);
-        for (var i = 0; i < mdl.Wmu_output1.length; i++) {
-            mdl.Wmu_output[i] = mdl.Wmu_output1[i];
-        }
-        for (var i = 0; i < mdl.Wmu_output2.length; i++) {
-            mdl.Wmu_output[mdl.Wmu_output1.length + i] = mdl.Wmu_output2[i];
-        }
+//    if (typeof mdl.Wmu_output == 'undefined') {
+    if (typeof mdl.wb_W_decoder0 == 'undefined') {
+ //       mdl.Wmu_output = new Float32Array(mdl.Wmu_output1.length + mdl.Wmu_output2.length);
+ //       for (var i = 0; i < mdl.Wmu_output1.length; i++) {
+ //           mdl.Wmu_output[i] = mdl.Wmu_output1[i];
+ //       }
+ //       for (var i = 0; i < mdl.Wmu_output2.length; i++) {
+ //           mdl.Wmu_output[mdl.Wmu_output1.length + i] = mdl.Wmu_output2[i];
+ //       }
         
         for (var i = 0; i < mdl.rvar_decoder0.length; i++) {
             mdl.rvar_decoder0[i] = mdl.gamma_decoder0[i]/Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
         }
-    }
-    for (var i = 0; i < 20; i++){
-        latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
     
         mdl.wb_W_decoder0 = weblas.pipeline.Tensor([300,20],weblas.util.transpose(20,300,mdl.W_decoder0));
         mdl.wb_rmean_decoder0 = weblas.pipeline.Tensor([1,300], mdl.rmean_decoder0);
@@ -248,6 +246,9 @@ function generateImage_gaussian(mdl) {
         mdl.wb_beta_decoder0 = weblas.pipeline.Tensor([300,300],generate_sqMat(mdl.beta_decoder0));
         mdl.wb_Wmu_output = weblas.pipeline.Tensor([192*128*3,300], weblas.util.transpose(300,192*127*3,mdl.W_output));
         mdl.wb_bmu_output = weblas.pipeline.Tensor([1,192*128*3], mdl.bmu_output);
+    }
+    for (var i = 0; i < 20; i++){
+        latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
     }
     var wblatent = weblas.pipeline.Tensor([1,20],latent)
     //np.dot(latent,W_decoder0)
