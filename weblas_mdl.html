@@ -244,7 +244,7 @@ function generateImage_gaussian(mdl) {
         mdl.wb_gamma_over_rsd_decoder0 = new weblas.pipeline.Tensor([300,300], generate_sqMat(mdl.rvar_decoder0));
        // mdl.wb_gamma_decoder0 = weblas.pipeline.Tensor([1,300],mdl.gamma_decoder0);
         mdl.wb_beta_decoder0 = new weblas.pipeline.Tensor([300,300],generate_sqMat(mdl.beta_decoder0));
-        mdl.wb_Wmu_output = new weblas.pipeline.Tensor([192*128*3,300], weblas.util.transpose(300,192*128*3,mdl.W_output));
+        mdl.wb_Wmu_output = new weblas.pipeline.Tensor([192*128*3,300], weblas.util.transpose(300,192*128*3,mdl.Wmu_output));
         mdl.wb_bmu_output = new weblas.pipeline.Tensor([1,192*128*3], mdl.bmu_output);
     }
     for (var i = 0; i < 20; i++){
