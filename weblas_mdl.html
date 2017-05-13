@@ -239,18 +239,18 @@ function generateImage_gaussian(mdl) {
             mdl.rvar_decoder0[i] = mdl.gamma_decoder0[i]/Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
         }
     
-        mdl.wb_W_decoder0 = weblas.pipeline.Tensor([300,20],weblas.util.transpose(20,300,mdl.W_decoder0));
-        mdl.wb_rmean_decoder0 = weblas.pipeline.Tensor([1,300], mdl.rmean_decoder0);
-        mdl.wb_gamma_over_rsd_decoder0 = weblas.pipeline.Tensor([300,300], generate_sqMat(mdl.rvar_decoder0));
+        mdl.wb_W_decoder0 = new weblas.pipeline.Tensor([300,20],weblas.util.transpose(20,300,mdl.W_decoder0));
+        mdl.wb_rmean_decoder0 = new weblas.pipeline.Tensor([1,300], mdl.rmean_decoder0);
+        mdl.wb_gamma_over_rsd_decoder0 = new weblas.pipeline.Tensor([300,300], generate_sqMat(mdl.rvar_decoder0));
        // mdl.wb_gamma_decoder0 = weblas.pipeline.Tensor([1,300],mdl.gamma_decoder0);
-        mdl.wb_beta_decoder0 = weblas.pipeline.Tensor([300,300],generate_sqMat(mdl.beta_decoder0));
-        mdl.wb_Wmu_output = weblas.pipeline.Tensor([192*128*3,300], weblas.util.transpose(300,192*127*3,mdl.W_output));
-        mdl.wb_bmu_output = weblas.pipeline.Tensor([1,192*128*3], mdl.bmu_output);
+        mdl.wb_beta_decoder0 = new weblas.pipeline.Tensor([300,300],generate_sqMat(mdl.beta_decoder0));
+        mdl.wb_Wmu_output = new weblas.pipeline.Tensor([192*128*3,300], weblas.util.transpose(300,192*127*3,mdl.W_output));
+        mdl.wb_bmu_output = new weblas.pipeline.Tensor([1,192*128*3], mdl.bmu_output);
     }
     for (var i = 0; i < 20; i++){
         latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
     }
-    var wblatent = weblas.pipeline.Tensor([1,20],latent)
+    var wblatent = new weblas.pipeline.Tensor([1,20],latent)
     //np.dot(latent,W_decoder0)
     
     var v300_1 = weblas.pipeline.sgemm(1,wblatent,mdl.wb_W_decoder0,-1,mdl.wb_rmean_decoder0)
@@ -261,13 +261,13 @@ function generateImage_gaussian(mdl) {
 //    elemwise_div(v300,v300,mdl.rvar_decoder0);
     var v300_2 = weblas.pipeline.sgemm(1,v300_1,mdl.wb_gamma_over_rsd_decoder0,+1,mdl.wb_beta_decoder0)
     
-    var v300_3 = weblas.pipeline.sclmp(v300_2,0,1000);
+    var v300_3 = weblas.pipeline.sclmp(null,0,v300_2,);
     // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
     //elemwise_mul(v300,v300,mdl.gamma_decoder0);
     //elemwise_add(v300,v300,+1,mdl.beta_decoder0);
     //elemwise_rect(v300,v300);
     var v300_4 = weblas.pipeline.sgemm(1,v300_3,mdl.wb_Wmu_output,+1,mdl.wb_bmu_output)
-    mdl.hsv_img_gen = weblas.pipeline.sclmp(v300_4,0,1);
+    mdl.hsv_img_gen = weblas.pipeline.sclmp(1,0,v300_4);
     // img = np.dot(hidden_out,Wmu_output) + bmu_output
     //myMul(mdl.hsv_img_gen,v300,mdl.Wmu_output)
     //elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,+1,mdl.bmu_output);
