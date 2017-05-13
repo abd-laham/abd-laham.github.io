@@ -192,19 +192,19 @@ function myFunction() {
     read_array_32("/gaussiancost/rmean_decoder0_32.bin",gaussian_model,"rmean_decoder0");
     read_array_32("/gaussiancost/rvar_decoder0_32.bin",gaussian_model,"rvar_decoder0");
     // mse_model
-    read_array_16("/msemodel/W_decoder0.bin",mse_model,"W_decoder0");
-    read_array_16("/msemodel/Wmu_output1.bin",mse_model,"Wmu_output1");
-    read_array_16("/msemodel/Wmu_output2.bin",mse_model,"Wmu_output2");
-    read_array_16("/msemodel/bmu_output.bin",mse_model,"bmu_output");
+//    read_array_16("/msemodel/W_decoder0.bin",mse_model,"W_decoder0");
+//    read_array_16("/msemodel/Wmu_output1.bin",mse_model,"Wmu_output1");
+//    read_array_16("/msemodel/Wmu_output2.bin",mse_model,"Wmu_output2");
+//    read_array_16("/msemodel/bmu_output.bin",mse_model,"bmu_output");
     
-    read_array_16("/msemodel/beta_decoder0.bin",mse_model,"beta_decoder0");
-    read_array_16("/msemodel/gamma_decoder0.bin",mse_model,"gamma_decoder0");
-    read_array_32("/msemodel/rmean_decoder0.bin",mse_model,"rmean_decoder0");
-    read_array_32("/msemodel/rvar_decoder0.bin",mse_model,"rvar_decoder0");
-    read_array_32("/msemodel/rmean_output.bin",mse_model,"rmean_output");
-    read_array_32("/msemodel/rvar_output.bin",mse_model,"rvar_output");
-    read_array_16("/msemodel/gamma_output.bin",mse_model,"gamma_output");
-    read_array_16("/msemodel/beta_output.bin",mse_model,"beta_output");
+//    read_array_16("/msemodel/beta_decoder0.bin",mse_model,"beta_decoder0");
+//    read_array_16("/msemodel/gamma_decoder0.bin",mse_model,"gamma_decoder0");
+//    read_array_32("/msemodel/rmean_decoder0.bin",mse_model,"rmean_decoder0");
+//    read_array_32("/msemodel/rvar_decoder0.bin",mse_model,"rvar_decoder0");
+//    read_array_32("/msemodel/rmean_output.bin",mse_model,"rmean_output");
+//    read_array_32("/msemodel/rvar_output.bin",mse_model,"rvar_output");
+//    read_array_16("/msemodel/gamma_output.bin",mse_model,"gamma_output");
+//    read_array_16("/msemodel/beta_output.bin",mse_model,"beta_output");
 }
 var rgb_img = new Uint8Array(192*128*3);
 var latent = new Float32Array(20);
@@ -213,6 +213,17 @@ var v300 = new Float32Array(300);
 var firstClick = true;
 //var imgData = ctx.createImageData(128, 192);
 
+function generate_sqMat(diag){
+    var k = 0;
+    var res = Float32Array(diag.length*diag.length);
+    for (var i = 0; i < res.length; i++){
+        if (i % (diag.length + 1) == 0){
+            res[i] = diag[k];
+            k++'
+        }
+    }
+    return res;
+}
 function generateImage_gaussian(mdl) {
     if (typeof mdl.Wmu_output == 'undefined') {
         mdl.Wmu_output = new Float32Array(mdl.Wmu_output1.length + mdl.Wmu_output2.length);
@@ -224,7 +235,7 @@ function generateImage_gaussian(mdl) {
         }
         
         for (var i = 0; i < mdl.rvar_decoder0.length; i++) {
-            mdl.rvar_decoder0[i] = 1.0/Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
+            mdl.rvar_decoder0[i] = mdl.gamma_decoder0[i]/Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
         }
     }
     for (var i = 0; i < 20; i++){
@@ -232,35 +243,40 @@ function generateImage_gaussian(mdl) {
     
         mdl.wb_W_decoder0 = weblas.pipeline.Tensor([300,20],weblas.util.transpose(20,300,mdl.W_decoder0));
         mdl.wb_rmean_decoder0 = weblas.pipeline.Tensor([1,300], mdl.rmean_decoder0);
-        mdl.wb_inv_rsd_decoder0 = weblas.pipeline.Tensor([1,300], mdl.rvar_decoder0);
-        mdl.wb_gamma_decoder0 = weblas.pipeline.Tensor([1,300],mdl.gamma_decoder0);
-        mdl.wb_beta_decoder0 = weblas.pipeline.Tensor([1,300],mdl.beta_decoder0);
+        mdl.wb_gamma_over_rsd_decoder0 = weblas.pipeline.Tensor([300,300], generate_sqMat(mdl.rvar_decoder0));
+       // mdl.wb_gamma_decoder0 = weblas.pipeline.Tensor([1,300],mdl.gamma_decoder0);
+        mdl.wb_beta_decoder0 = weblas.pipeline.Tensor([300,300],generate_sqMat(mdl.beta_decoder0));
         mdl.wb_Wmu_output = weblas.pipeline.Tensor([192*128*3,300], weblas.util.transpose(300,192*127*3,mdl.W_output));
         mdl.wb_bmu_output = weblas.pipeline.Tensor([1,192*128*3], mdl.bmu_output);
     }
-    weblas.pipeline.Tensor([1,20],latent)
+    var wblatent = weblas.pipeline.Tensor([1,20],latent)
     //np.dot(latent,W_decoder0)
-    myMul(v300,latent,mdl.W_decoder0);
+    
+    var v300_1 = weblas.pipeline.sgemm(1,wblatent,mdl.wb_W_decoder0,-1,mdl.wb_rmean_decoder0)
+//    myMul(v300,latent,mdl.W_decoder0);
     
     //out_norm = (out - rmean_decoder0)/rvar_decoder0
-    elemwise_add(v300,v300,-1,mdl.rmean_decoder0);
-    elemwise_div(v300,v300,mdl.rvar_decoder0);
+//    elemwise_add(v300,v300,-1,mdl.rmean_decoder0);
+//    elemwise_div(v300,v300,mdl.rvar_decoder0);
+    var v300_2 = weblas.pipeline.sgemm(1,v300_1,mdl.wb_gamma_over_rsd_decoder0,+1,mdl.wb_beta_decoder0)
     
+    var v300_3 = weblas.pipeline.sclmp(v300_2,0,1000);
     // hidden_out = rect(gamma_decoder0*out_norm + beta_decoder0);
-    elemwise_mul(v300,v300,mdl.gamma_decoder0);
-    elemwise_add(v300,v300,+1,mdl.beta_decoder0);
-    elemwise_rect(v300,v300);
-    
+    //elemwise_mul(v300,v300,mdl.gamma_decoder0);
+    //elemwise_add(v300,v300,+1,mdl.beta_decoder0);
+    //elemwise_rect(v300,v300);
+    var v300_4 = weblas.pipeline.sgemm(1,v300_3,mdl.wb_Wmu_output,+1,mdl.wb_bmu_output)
+    mdl.hsv_img_gen = weblas.pipeline.sclmp(v300_4,0,1);
     // img = np.dot(hidden_out,Wmu_output) + bmu_output
-    myMul(mdl.hsv_img_gen,v300,mdl.Wmu_output)
-    elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,+1,mdl.bmu_output);
-    for (var i = 0; i < mdl.hsv_img_gen.length; i++){
-        if (mdl.hsv_img_gen[i] < 0) {
-            mdl.hsv_img_gen[i] = 0;
-        } else if (mdl.hsv_img_gen[i] > 1) {
-            mdl.hsv_img_gen[i] = 1;
-        }
-    }
+    //myMul(mdl.hsv_img_gen,v300,mdl.Wmu_output)
+    //elemwise_add(mdl.hsv_img_gen,mdl.hsv_img_gen,+1,mdl.bmu_output);
+    //for (var i = 0; i < mdl.hsv_img_gen.length; i++){
+    //    if (mdl.hsv_img_gen[i] < 0) {
+    ///        mdl.hsv_img_gen[i] = 0;
+    //    } else if (mdl.hsv_img_gen[i] > 1) {
+    //        mdl.hsv_img_gen[i] = 1;
+    //    }
+    //}
 }
 function generateImage_mse(mdl) {
     if (typeof mdl.Wmu_output == 'undefined') {
@@ -357,8 +373,8 @@ function reset_sliders(){
 function drawImage() {
     generateImage_gaussian(gaussian_model);
     hsv_to_rgb(gaussian_model);
-    generateImage_mse(mse_model);
-    hsv_to_rgb(mse_model);
+//    generateImage_mse(mse_model);
+//    hsv_to_rgb(mse_model);
 //    var rgb_img = hsv_to_rgb(hsv_img_gen);
     
 //    var i;
@@ -369,7 +385,7 @@ function drawImage() {
 //        imgData.data[i*4+3] = 255;
 //    }
     ctx.putImageData(gaussian_model.imgData, 10, 10);
-    ctx.putImageData(mse_model.imgData, 210, 10);
+//    ctx.putImageData(mse_model.imgData, 210, 10);
 }
 var lastTime = 0;
 function scroll_move(e){
