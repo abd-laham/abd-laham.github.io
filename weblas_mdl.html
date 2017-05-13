@@ -212,7 +212,7 @@ var v300 = new Float32Array(300);
 //var hsv_img_gen = new Float32Array(192*128*3);
 var firstClick = true;
 //var imgData = ctx.createImageData(128, 192);
-    
+
 function generateImage_gaussian(mdl) {
     if (typeof mdl.Wmu_output == 'undefined') {
         mdl.Wmu_output = new Float32Array(mdl.Wmu_output1.length + mdl.Wmu_output2.length);
@@ -224,12 +224,21 @@ function generateImage_gaussian(mdl) {
         }
         
         for (var i = 0; i < mdl.rvar_decoder0.length; i++) {
-            mdl.rvar_decoder0[i] = Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
+            mdl.rvar_decoder0[i] = 1.0/Math.sqrt(mdl.rvar_decoder0[i] + 0.0001);
         }
     }
     for (var i = 0; i < 20; i++){
         latent[i] = 12.0*(document.getElementById("myRange" + i).value - 50)/50.0
+    
+        mdl.wb_W_decoder0 = weblas.pipeline.Tensor([300,20],weblas.util.transpose(20,300,mdl.W_decoder0));
+        mdl.wb_rmean_decoder0 = weblas.pipeline.Tensor([1,300], mdl.rmean_decoder0);
+        mdl.wb_inv_rsd_decoder0 = weblas.pipeline.Tensor([1,300], mdl.rvar_decoder0);
+        mdl.wb_gamma_decoder0 = weblas.pipeline.Tensor([1,300],mdl.gamma_decoder0);
+        mdl.wb_beta_decoder0 = weblas.pipeline.Tensor([1,300],mdl.beta_decoder0);
+        mdl.wb_Wmu_output = weblas.pipeline.Tensor([192*128*3,300], weblas.util.transpose(300,192*127*3,mdl.W_output));
+        mdl.wb_bmu_output = weblas.pipeline.Tensor([1,192*128*3], mdl.bmu_output);
     }
+    weblas.pipeline.Tensor([1,20],latent)
     //np.dot(latent,W_decoder0)
     myMul(v300,latent,mdl.W_decoder0);
     
