@@ -38,10 +38,17 @@ NOTICE: if you are trying this using a mobile or tablet, you might need to click
 <input type="range" id="myRange19" onmousemove="scroll_move(event)" value="50"><br>
         </td>
         <td>
-             <canvas id="myCanvas" width="500" height="300" style="border:1px solid #d3d3d3;">
+            <table>
+                <tr><td>
+            The figure on the right is using the MSE while the one on the left was trained using the log of Gaussian cost function. 
+                    </td></tr>
+                <tr><td>
+                    <canvas id="myCanvas" width="500" height="300" style="border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas> <br>
             <button onclick="drawImage()">Draw it</button>
 <button onclick="reset_sliders()">reset</button>
+                    </td></tr>
+            </table>
         </td></tr></table>
 <p>Click the button to get the value of the slider control.</p>
 
